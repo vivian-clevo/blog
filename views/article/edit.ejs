@@ -1,0 +1,50 @@
+<%- include('../layout/header.ejs') %>
+
+  <link rel="stylesheet" href="/node_modules/mditor/dist/css/mditor.min.css">
+  <script src="/node_modules/mditor/dist/js/mditor.min.js"></script>
+
+  <div class="container">
+    <h1>编辑文章页</h1>
+    <hr>
+    <form id="form">
+      <!--应该把文章的标题，作为 隐藏域，保存到 表单中-->
+      <input type="hidden" name="id" value="<%= article.id %>">
+      <div class="form-group">
+        <label>文章标题：</label>
+        <input type="text" name="title" class="form-control" required value="<%= article.title %>">
+      </div>
+
+      <div class="form-group">
+        <label>文章内容：</label>
+        <textarea name="content" class="form-control" id="editor"><%= article.content %></textarea>
+      </div>
+
+      <div class="form-group">
+        <input type="submit" value="保存文章" class="btn btn-primary">
+      </div>
+    </form>
+  </div>
+
+  <script>
+    $(function () {
+      // 初始化编辑器
+      var mditor = Mditor.fromTextarea(document.getElementById('editor'));
+
+      $('#form').on('submit', function (e) {
+        e.preventDefault()
+
+        $.ajax({
+          url: '/article/edit',
+          data: $('#form').serialize(),
+          type: 'POST',
+          dataType: 'json',
+          success: function (result) {
+            if (result.status !== 200) return alert('修改文章失败！')
+            location.href = '/article/info/<%= article.id %>'
+          }
+        })
+      })
+    })
+  </script>
+
+  <%- include('../layout/footer.ejs') %>
